@@ -13,7 +13,7 @@ const leftColumnSections = [
     sectionTitle: '트렌드',
     articles: [
       {
-        title: '秋, 취임 10일만에 G7 참석 왜',
+        title: '취임 10일만에 G7 참석 왜',
         image: 'https://via.placeholder.com/300x200.png/000000/FFFFFF?text=Side+Article',
       },
       {
