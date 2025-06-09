@@ -7,6 +7,7 @@ import { EditorContent, useEditor } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import Link from '@tiptap/extension-link'
 import Youtube from '@tiptap/extension-youtube'
+import Image from '@tiptap/extension-image'
 
 type Article = {
   id: string;
@@ -29,6 +30,7 @@ function TiptapEditor({
   const editor = useEditor({
     extensions: [
       StarterKit,
+      Image,
       Link.configure({
         openOnClick: true,
         autolink: true,
@@ -36,7 +38,7 @@ function TiptapEditor({
       }),
       Youtube.configure({
         HTMLAttributes: {
-          class: 'mx-auto my-4 max-w-[640px] aspect-video',
+          class: 'w-full aspect-video max-w-[640px] mx-auto my-4',
         },
       }),
     ],
@@ -63,21 +65,14 @@ function TiptapEditor({
           onClick={() => editor.chain().focus().toggleBold().run()}
           className={`px-2 py-1 rounded ${editor.isActive('bold') ? 'bg-jj text-white' : 'bg-gray-200 text-black'}`}
         >
-          Bold
+          <b>b</b>
         </button>
         <button
           type="button"
           onClick={() => editor.chain().focus().toggleItalic().run()}
           className={`px-2 py-1 rounded ${editor.isActive('italic') ? 'bg-jj text-white' : 'bg-gray-200 text-black'}`}
         >
-          Italic
-        </button>
-        <button
-          type="button"
-          onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
-          className={`px-2 py-1 rounded ${editor.isActive('heading', { level: 1 }) ? 'bg-jj text-white' : 'bg-gray-200 text-black'}`}
-        >
-          H1
+          <i>i</i>
         </button>
         <button
           type="button"
@@ -123,6 +118,18 @@ function TiptapEditor({
           className="px-2 py-1 rounded bg-gray-200 text-black"
         >
           유튜브
+        </button>
+        <button
+          type="button"
+          onClick={() => {
+            const url = window.prompt('이미지 주소 입력:')
+            if (url) {
+              editor.chain().focus().setImage({ src: url }).run()
+            }
+          }}
+          className="px-2 py-1 rounded bg-gray-200 text-black"
+        >
+          이미지
         </button>
       </div>
       <EditorContent editor={editor} />
@@ -198,10 +205,10 @@ const EditorPage = () => {
   const handleSave = async () => {
     if (!article) return
     setIsSaving(true)
-    const { title, intro, content, author } = article
+    const { title, intro, content, author, updated_at } = article
     const { error } = await supabase
       .from('articles')
-      .update({ title, intro, content, author })
+      .update({ title, intro, content, author, updated_at })
       .eq('id', article.id)
 
     if (error) {
