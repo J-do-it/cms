@@ -161,11 +161,27 @@ const EditorPage = () => {
     if (id) fetchArticle()
   }, [id, supabase, router])
 
+  const handleAuthorChange = (e: ChangeEvent<HTMLInputElement>) => {
+    if (!article) return
+    setArticle({
+      ...article,
+      author: e.target.value,
+    })
+  }
+
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (!article) return
     setArticle({
       ...article,
       [e.target.name]: e.target.value,
+    })
+  }
+
+  const handleIntroChange = (value: string) => {
+    if (!article) return
+    setArticle({
+      ...article,
+      intro: value,
     })
   }
 
@@ -180,10 +196,10 @@ const EditorPage = () => {
   const handleSave = async () => {
     if (!article) return
     setIsSaving(true)
-    const { title, intro, content } = article
+    const { title, intro, content, author } = article
     const { error } = await supabase
       .from('articles')
-      .update({ title, intro, content })
+      .update({ title, intro, content, author })
       .eq('id', article.id)
 
     if (error) {
@@ -224,6 +240,21 @@ const EditorPage = () => {
           </div>
 
           <div className="mb-6">
+            <label htmlFor="author" className="block text-lg font-medium text-white mb-2">
+              작성자
+            </label>
+            <input
+              type="text"
+              id="author"
+              name="author"
+              value={article.author || ''}
+              onChange={handleAuthorChange}
+              className="mt-1 block w-full px-4 py-3 bg-white text-black border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-lg"
+              placeholder="작성자"
+            />
+          </div>
+
+          <div className="mb-6">
             <label htmlFor="title" className="block text-lg font-medium text-white mb-2">
               제목
             </label>
@@ -243,7 +274,7 @@ const EditorPage = () => {
             </label>
             <TiptapEditor
               value={article.intro || ''}
-              onChange={handleContentChange}
+              onChange={handleIntroChange}
             />
           </div>
           <div className="flex-grow flex flex-col">
@@ -263,6 +294,17 @@ const EditorPage = () => {
         <div className="bg-gray-100 rounded-lg shadow-md p-6 h-full overflow-y-auto">
           <article className="prose lg:prose-xl max-w-none">
             <h1 dangerouslySetInnerHTML={{ __html: article.title || '' }}></h1>
+            <p className="text-sm text-gray-500 mb-2 sm:mb-0">
+              {article.author && (
+                <span className="font-medium">Written by {article.author}</span>
+              )}
+              <br />
+              {new Date(article.created_at as string).toLocaleDateString('ko-KR', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+              })}
+            </p>
             <div style={{ whiteSpace: 'pre-wrap' }}>
               <div dangerouslySetInnerHTML={{ __html: article.intro || '' }}></div>
               <div dangerouslySetInnerHTML={{ __html: article.content || '' }}></div>
