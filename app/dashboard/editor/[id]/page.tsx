@@ -301,7 +301,7 @@ const EditorPage = () => {
                 <span className="font-medium">Written by {article.author}</span>
               )}
               <br />
-              {new Date(article.created_at).toLocaleDateString('ko-KR', {
+              {new Date(article.created_at as string).toLocaleDateString('ko-KR', {
                 year: 'numeric',
                 month: 'long',
                 day: 'numeric'
