@@ -47,7 +47,7 @@ function TiptapEditor({
     editorProps: {
       attributes: {
         class:
-          'prose min-h-[100px] bg-white text-black border border-gray-300 rounded-md px-4 py-3 focus:outline-none',
+          'w-full min-h-[100px] bg-white text-black border border-gray-300 rounded-md px-4 py-3 focus:outline-none text-sm',
       },
     },
   })
@@ -228,10 +228,10 @@ const EditorPage = () => {
   return (
     <main className="flex h-screen w-full bg-black text-white">
       {/* Editor Panel */}
-      <div className="w-1/2 h-full flex flex-col p-4">
+      <div className="flex-1 h-full flex flex-col p-4">
         <div className="bg-black rounded-lg shadow-md p-6 h-full flex flex-col">
-          <div className="flex justify-between items-center mb-6">
-            <h1 className="text-3xl font-bold text-white">에디터</h1>
+          <div className="flex justify-between items-center mb-2">
+            <h1 className="text-xl font-bold text-white">에디터</h1>
             <button
               onClick={handleSave}
               disabled={isSaving}
@@ -241,8 +241,8 @@ const EditorPage = () => {
             </button>
           </div>
 
-          <div className="mb-6">
-            <label htmlFor="author" className="block text-lg font-medium text-white mb-2">
+          <div className="w-full mb-6">
+            <label htmlFor="author" className="block text-sm font-medium text-white mb-2">
               작성자
             </label>
             <input
@@ -251,13 +251,13 @@ const EditorPage = () => {
               name="author"
               value={article.author as string || ''}
               onChange={handleAuthorChange}
-              className="mt-1 block w-full px-4 py-3 bg-white text-black border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-lg"
+              className="mt-1 block w-full px-4 py-3 bg-white text-black border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-sm"
               placeholder="작성자"
             />
           </div>
 
-          <div className="mb-6">
-            <label htmlFor="title" className="block text-lg font-medium text-white mb-2">
+          <div className="w-full mb-6">
+            <label htmlFor="title" className="block text-sm font-medium text-white mb-2">
               제목
             </label>
             <input
@@ -266,12 +266,12 @@ const EditorPage = () => {
               name="title"
               value={article.title || ''}
               onChange={handleInputChange}
-              className="mt-1 block w-full px-4 py-3 bg-white text-black border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-lg"
+              className="mt-1 block w-full px-4 py-3 bg-white text-black border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-sm"
               placeholder="아티클 제목"
             />
           </div>
-          <div className="mb-6">
-            <label htmlFor="title" className="block text-lg font-medium text-white mb-2">
+          <div className="w-full mb-6">
+            <label htmlFor="title" className="w-full block text-sm font-medium text-white mb-2">
               인트로
             </label>
             <TiptapEditor
@@ -279,8 +279,8 @@ const EditorPage = () => {
               onChange={handleIntroChange}
             />
           </div>
-          <div className="flex-grow flex flex-col">
-            <label htmlFor="content" className="block text-lg font-medium text-white mb-2">
+          <div className="w-full flex-grow flex flex-col">
+            <label htmlFor="content" className="w-full block text-sm font-medium text-white mb-2">
               내용
             </label>
             <TiptapEditor
@@ -292,7 +292,7 @@ const EditorPage = () => {
       </div>
 
       {/* Preview Panel */}
-      <div className="w-1/2 h-full flex flex-col p-4">
+      <div className="w-[430px] flex-shrink-0 h-full flex flex-col p-4">
         <div className="bg-gray-100 rounded-lg shadow-md p-6 h-full overflow-y-auto">
           <article className="prose lg:prose-xl max-w-none">
             <h1 dangerouslySetInnerHTML={{ __html: article.title || '' }}></h1>
