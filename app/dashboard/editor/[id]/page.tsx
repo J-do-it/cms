@@ -8,6 +8,7 @@ import StarterKit from '@tiptap/starter-kit'
 import Link from '@tiptap/extension-link'
 import Youtube from '@tiptap/extension-youtube'
 import { Node, type Command } from '@tiptap/core'
+import ImageStorageModal from '@/components/ImageStorageModal'
 
 declare module '@tiptap/core' {
   interface Commands<ReturnType> {
@@ -83,6 +84,8 @@ function TiptapEditor({
   value: string;
   onChange: (value: string) => void;
 }) {
+  const [isImageModalOpen, setIsImageModalOpen] = useState(false)
+  
   const editor = useEditor({
     extensions: [
       StarterKit,
@@ -202,8 +205,25 @@ function TiptapEditor({
         >
           alt 수정
         </button>
+        <button
+          type="button"
+          onClick={() => setIsImageModalOpen(true)}
+          className="px-2 py-1 rounded bg-gray-200 text-black"
+        >
+          이미지 저장소
+        </button>
       </div>
       <EditorContent editor={editor} />
+      
+      {/* 이미지 저장소 모달 */}
+      <ImageStorageModal
+        isOpen={isImageModalOpen}
+        onClose={() => setIsImageModalOpen(false)}
+        onImageSelect={(url) => {
+          const alt = window.prompt('이미지 설명 (alt text) 입력:', '')
+          ;(editor.commands as any).setImageWithCaption({ src: url, alt: alt || '' })
+        }}
+      />
     </div>
   )
 }
