@@ -7,7 +7,7 @@ import { EditorContent, useEditor } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import Link from '@tiptap/extension-link'
 import Youtube from '@tiptap/extension-youtube'
-import { Node } from '@tiptap/core'
+import { Node, type Command } from '@tiptap/core'
 
 declare module '@tiptap/core' {
   interface Commands<ReturnType> {
@@ -53,9 +53,9 @@ const ImageWithCaption = Node.create({
     ]
   },
 
-  addCommands() {
+  addCommands(): any {
     return {
-      setImageWithCaption: (options) => ({ commands }) => {
+      setImageWithCaption: (options: { src: string; alt: string | null }) => ({ commands }: any) => {
         return commands.insertContent({
           type: this.name,
           attrs: options,
@@ -181,7 +181,7 @@ function TiptapEditor({
             const url = window.prompt('이미지 주소 입력:')
             if (url) {
               const alt = window.prompt('이미지 설명 (alt text) 입력:', '')
-              editor.chain().focus().setImageWithCaption({ src: url, alt }).run()
+              ;(editor.commands as any).setImageWithCaption({ src: url, alt: alt || '' })
             }
           }}
           className="px-2 py-1 rounded bg-gray-200 text-black"
