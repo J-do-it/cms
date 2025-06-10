@@ -73,6 +73,7 @@ type Article = {
   intro: string | null;
   created_at: string | null;
   content: string | null;
+  type: string | null;
   [key: string]: unknown;
 }
 
@@ -189,7 +190,7 @@ function TiptapEditor({
           }}
           className="px-2 py-1 rounded bg-gray-200 text-black"
         >
-          이미지
+          Image
         </button>
         <button
           type="button"
@@ -203,14 +204,14 @@ function TiptapEditor({
           disabled={!editor.isActive('imageWithCaption')}
           className={`px-2 py-1 rounded ${editor.isActive('imageWithCaption') ? 'bg-jj text-white' : 'bg-gray-200 text-black'}`}
         >
-          alt 수정
+          Alt수정
         </button>
         <button
           type="button"
           onClick={() => setIsImageModalOpen(true)}
           className="px-2 py-1 rounded bg-gray-200 text-black"
         >
-          이미지 저장소
+          Image Storage
         </button>
       </div>
       <EditorContent editor={editor} />
@@ -277,6 +278,14 @@ const EditorPage = () => {
     })
   }
 
+  const handleTypeChange = (e: ChangeEvent<HTMLSelectElement>) => {
+    if (!article) return
+    setArticle({
+      ...article,
+      type: e.target.value || null,
+    })
+  }
+
   const handleIntroChange = (value: string) => {
     if (!article) return
     setArticle({
@@ -296,10 +305,10 @@ const EditorPage = () => {
   const handleSave = async () => {
     if (!article) return
     setIsSaving(true)
-    const { title, intro, content, author, updated_at } = article
+    const { title, intro, content, author, type, updated_at } = article
     const { error } = await supabase
       .from('articles')
-      .update({ title, intro, content, author, updated_at })
+      .update({ title, intro, content, author, type, updated_at })
       .eq('id', article.id)
 
     if (error) {
@@ -354,19 +363,38 @@ const EditorPage = () => {
             />
           </div>
 
-          <div className="w-full mb-6">
-            <label htmlFor="title" className="block text-sm font-medium text-white mb-2">
-              제목
-            </label>
-            <input
-              type="text"
-              id="title"
-              name="title"
-              value={article.title || ''}
-              onChange={handleInputChange}
-              className="mt-1 block w-full px-4 py-3 bg-white text-black border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-sm"
-              placeholder="아티클 제목"
-            />
+          <div className="flex gap-4 mb-6">
+            <div className="flex-1">
+              <label htmlFor="title" className="block text-sm font-medium text-white mb-2">
+                제목
+              </label>
+              <input
+                type="text"
+                id="title"
+                name="title"
+                value={article.title || ''}
+                onChange={handleInputChange}
+                className="mt-1 block w-full px-4 py-3 bg-white text-black border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-sm"
+                placeholder="아티클 제목"
+              />
+            </div>
+            <div className="w-40">
+              <label htmlFor="type" className="block text-sm font-medium text-white mb-2">
+                분류
+              </label>
+              <select
+                id="type"
+                name="type"
+                value={article.type || ''}
+                onChange={handleTypeChange}
+                className="mt-1 block w-full px-4 py-3 bg-white text-black border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-sm"
+              >
+                <option value="">선택하세요</option>
+                <option value="인터뷰">인터뷰</option>
+                <option value="글로벌">글로벌</option>
+                <option value="인사이트">인사이트</option>
+              </select>
+            </div>
           </div>
           <div className="w-full mb-6">
             <label htmlFor="title" className="w-full block text-sm font-medium text-white mb-2">
@@ -392,7 +420,18 @@ const EditorPage = () => {
       {/* Preview Panel */}
       <div className="w-[430px] flex-shrink-0 h-full flex flex-col p-4">
         <div className="bg-gray-100 rounded-lg shadow-md p-6 h-full overflow-y-auto">
-          <article className="prose lg:prose-xl max-w-none">
+          <article
+          className="prose lg:prose-xl max-w-none
+          prose-h1:text-gray-900 prose-h1:font-bold
+          prose-h2:text-gray-900 prose-h2:font-bold prose-h2:p-3 prose-h2:rounded-lg prose-h2:border-l-4 prose-h2:border-t-4 prose-h2:border-jj prose-h2:tracking-tighter
+          prose-p:text-gray-700 prose-p:leading-relaxed
+          prose-a:text-blue-600 prose-a:no-underline hover:prose-a:underline
+          prose-strong:text-gray-900
+          prose-ul:text-gray-700 prose-ol:text-gray-700
+          prose-li:text-gray-700
+          prose-blockquote:text-gray-600 prose-blockquote:border-l-blue-500               
+          prose-img:rounded-lg prose-img:shadow-md prose-img:mx-auto
+          prose-figcaption:text-center prose-figcaption:text-gray-500 prose-figcaption:text-sm">
             <h1 dangerouslySetInnerHTML={{ __html: article.title || '' }}></h1>
             <p className="text-sm text-gray-500 mb-2 sm:mb-0">
               {article.author && (
