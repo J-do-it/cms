@@ -7,7 +7,63 @@ import { EditorContent, useEditor } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import Link from '@tiptap/extension-link'
 import Youtube from '@tiptap/extension-youtube'
-import Image from '@tiptap/extension-image'
+import { Node } from '@tiptap/core'
+
+declare module '@tiptap/core' {
+  interface Commands<ReturnType> {
+    setImageWithCaption: (options: { src: string; alt: string | null }) => ReturnType;
+  }
+}
+
+const ImageWithCaption = Node.create({
+  name: 'imageWithCaption',
+  group: 'block',
+  content: 'inline*',
+  draggable: true,
+  isolating: true,
+
+  addAttributes() {
+    return {
+      src: {
+        default: null,
+        parseHTML: element => element.querySelector('img')?.getAttribute('src'),
+      },
+      alt: {
+        default: null,
+        parseHTML: element => element.querySelector('img')?.getAttribute('alt'),
+      },
+    }
+  },
+
+  parseHTML() {
+    return [
+      {
+        tag: 'figure',
+        contentElement: 'figcaption',
+      },
+    ]
+  },
+
+  renderHTML({ node, HTMLAttributes }) {
+    return [
+      'figure',
+      { class: 'm-0' },
+      ['img', { ...node.attrs, ...HTMLAttributes, 'data-mce-selected': '1' }],
+      ['figcaption', { class: 'text-center text-sm text-gray-500' }, 0],
+    ]
+  },
+
+  addCommands() {
+    return {
+      setImageWithCaption: (options) => ({ commands }) => {
+        return commands.insertContent({
+          type: this.name,
+          attrs: options,
+        })
+      },
+    }
+  },
+})
 
 type Article = {
   id: string;
@@ -30,7 +86,7 @@ function TiptapEditor({
   const editor = useEditor({
     extensions: [
       StarterKit,
-      Image,
+      ImageWithCaption,
       Link.configure({
         openOnClick: true,
         autolink: true,
@@ -49,7 +105,7 @@ function TiptapEditor({
     editorProps: {
       attributes: {
         class:
-          'w-full min-h-[100px] bg-white text-black border border-gray-300 rounded-md px-4 py-3 focus:outline-none text-sm',
+          'w-full min-h-[100px] max-h-[500px] bg-white text-black border border-gray-300 rounded-md px-4 py-3 focus:outline-none text-sm overflow-y-auto',
       },
     },
   })
@@ -124,12 +180,27 @@ function TiptapEditor({
           onClick={() => {
             const url = window.prompt('이미지 주소 입력:')
             if (url) {
-              editor.chain().focus().setImage({ src: url }).run()
+              const alt = window.prompt('이미지 설명 (alt text) 입력:', '')
+              editor.chain().focus().setImageWithCaption({ src: url, alt }).run()
             }
           }}
           className="px-2 py-1 rounded bg-gray-200 text-black"
         >
           이미지
+        </button>
+        <button
+          type="button"
+          onClick={() => {
+            const oldAlt = editor.getAttributes('imageWithCaption').alt
+            const alt = window.prompt('이미지 설명 (alt text) 수정:', oldAlt)
+            if (alt !== null) {
+              editor.chain().focus().updateAttributes('imageWithCaption', { alt }).run()
+            }
+          }}
+          disabled={!editor.isActive('imageWithCaption')}
+          className={`px-2 py-1 rounded ${editor.isActive('imageWithCaption') ? 'bg-jj text-white' : 'bg-gray-200 text-black'}`}
+        >
+          alt 수정
         </button>
       </div>
       <EditorContent editor={editor} />
