@@ -45,11 +45,8 @@ export default function LoginPage() {
       <div className="w-full max-w-sm p-8 space-y-6 bg-white rounded-xl shadow-lg">
         <div className="text-center">
           <h1 className="text-3xl font-extrabold text-gray-900">
-            CMS 관리자 로그인
+            FBK 관리자 로그인
           </h1>
-          <p className="mt-2 text-sm text-gray-600">
-            언론사 콘텐츠 관리 시스템
-          </p>
         </div>
         
         {error && (
@@ -98,7 +95,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-semibold rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+              className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-semibold rounded-md text-white bg-jj hover:bg-jj focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
             >
               {loading ? (
                 <>
@@ -114,8 +111,7 @@ export default function LoginPage() {
 
         <div className="text-center">
           <p className="text-xs text-gray-500">
-            보안이 중요한 언론사 CMS입니다.<br />
-            인증된 사용자만 접근할 수 있습니다.
+            admin@admin.com / adminadmin
           </p>
         </div>
       </div>

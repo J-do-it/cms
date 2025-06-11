@@ -129,9 +129,9 @@ export default async function AdminPage() {
                     <p className="text-xl font-semibold text-gray-900 dark:text-white">{article.title || '제목 없음'}</p>
                   </div>
                   <div className="flex-shrink-0 flex gap-2">
-                    <Link href={`/dashboard/article/${article.id}`} passHref>
+                    <Link href={`https://foodbusinesskorea.com/article/${article.id}`} passHref>
                       <button className="px-4 py-2 text-sm font-medium text-white bg-gray-600 rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
-                        미리보기
+                        바로가기
                       </button>
                     </Link>
                     <Link href={`/dashboard/editor/${article.id}`} passHref>
