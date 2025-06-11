@@ -2,20 +2,41 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { createClient } from '@/utils/supabase/client';
 
 export default function LoginPage() {
-  const [id, setId] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
   const router = useRouter();
+  const supabase = createClient();
   
-  // TODO: 실제 Supabase 또는 다른 인증 로직으로 교체해야 합니다.
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (id === 'admin' && password === 'password') {
-      alert('로그인 성공!');
-      router.push('/dashboard');
-    } else {
-      alert('아이디 또는 비밀번호가 일치하지 않습니다.');
+    setLoading(true);
+    setError('');
+
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) {
+        setError('이메일 또는 비밀번호가 일치하지 않습니다.');
+        return;
+      }
+
+      if (data.user) {
+        // 로그인 성공 - 미들웨어가 자동으로 대시보드로 리디렉션할 것입니다
+        router.push('/dashboard');
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+      setError('로그인 중 오류가 발생했습니다.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -24,24 +45,35 @@ export default function LoginPage() {
       <div className="w-full max-w-sm p-8 space-y-6 bg-white rounded-xl shadow-lg">
         <div className="text-center">
           <h1 className="text-3xl font-extrabold text-gray-900">
-            관리자 로그인
+            CMS 관리자 로그인
           </h1>
+          <p className="mt-2 text-sm text-gray-600">
+            언론사 콘텐츠 관리 시스템
+          </p>
         </div>
+        
+        {error && (
+          <div className="p-3 text-sm text-red-600 bg-red-100 border border-red-300 rounded">
+            {error}
+          </div>
+        )}
+
         <form className="mt-8 space-y-6" onSubmit={handleLogin}>
           <div className="rounded-md shadow-sm -space-y-px">
             <div>
-              <label htmlFor="id-input" className="sr-only">
-                아이디
+              <label htmlFor="email-input" className="sr-only">
+                이메일
               </label>
               <input
-                id="id-input"
-                name="id"
-                type="text"
+                id="email-input"
+                name="email"
+                type="email"
                 required
-                className="appearance-none rounded-none relative block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-jj focus:border-jj focus:z-10 sm:text-sm"
-                placeholder="아이디"
-                value={id}
-                onChange={(e) => setId(e.target.value)}
+                disabled={loading}
+                className="appearance-none rounded-none relative block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm disabled:bg-gray-100"
+                placeholder="이메일 주소"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
               />
             </div>
             <div>
@@ -53,7 +85,8 @@ export default function LoginPage() {
                 name="password"
                 type="password"
                 required
-                className="appearance-none rounded-none relative block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-jj focus:border-jj focus:z-10 sm:text-sm"
+                disabled={loading}
+                className="appearance-none rounded-none relative block w-full px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm disabled:bg-gray-100"
                 placeholder="비밀번호"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -64,22 +97,27 @@ export default function LoginPage() {
           <div>
             <button
               type="submit"
-              className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-semibold rounded-md text-white bg-jj hover:bg-opacity-95 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-jj transition-colors"
+              disabled={loading}
+              className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-semibold rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
             >
-              로그인
+              {loading ? (
+                <>
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                  로그인 중...
+                </>
+              ) : (
+                '로그인'
+              )}
             </button>
           </div>
-
-          <div>
-            <button
-              onClick={() => router.push('/dashboard')}
-              className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-semibold rounded-md text-white bg-gray-500 hover:bg-opacity-95 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-jj transition-colors"
-            >
-              (임시) 대시보드로 이동
-            </button>
-          </div>
-
         </form>
+
+        <div className="text-center">
+          <p className="text-xs text-gray-500">
+            보안이 중요한 언론사 CMS입니다.<br />
+            인증된 사용자만 접근할 수 있습니다.
+          </p>
+        </div>
       </div>
     </main>
   );
