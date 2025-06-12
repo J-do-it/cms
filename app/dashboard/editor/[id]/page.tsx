@@ -98,6 +98,8 @@ function TiptapEditor({
         linkOnPaste: true,
       }),
       Youtube.configure({
+        width: undefined,
+        height: undefined,
         HTMLAttributes: {
           class: 'w-full aspect-video max-w-[640px] mx-auto my-4',
         },
