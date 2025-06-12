@@ -492,7 +492,7 @@ const EditorPage = () => {
                   prose-figcaption:text-center prose-figcaption:text-gray-500 prose-figcaption:text-sm
                   prose-hr:border-gray-300 prose-hr:my-4"
                 dangerouslySetInnerHTML={{
-                  __html: article.content?.replace(/\n/g, '<br />') || ''
+                  __html: article.content || ''
                 }}
               />
             </div>
