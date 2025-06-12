@@ -9,6 +9,7 @@ import Link from '@tiptap/extension-link'
 import Youtube from '@tiptap/extension-youtube'
 import { Node, type Command } from '@tiptap/core'
 import ImageStorageModal from '@/components/ImageStorageModal'
+import Image from 'next/image'
 
 declare module '@tiptap/core' {
   interface Commands<ReturnType> {
@@ -86,7 +87,7 @@ function TiptapEditor({
   onChange: (value: string) => void;
 }) {
   const [isImageModalOpen, setIsImageModalOpen] = useState(false)
-  
+
   const editor = useEditor({
     extensions: [
       StarterKit,
@@ -156,7 +157,7 @@ function TiptapEditor({
               editor.chain().focus().setLink({ href: url }).run()
             }
           }}
-            className={`px-2 py-1 rounded ${editor.isActive('link') ? 'bg-jj text-white' : 'bg-gray-200 text-black'}`}
+          className={`px-2 py-1 rounded ${editor.isActive('link') ? 'bg-jj text-white' : 'bg-gray-200 text-black'}`}
         >
           링크
         </button>
@@ -185,7 +186,7 @@ function TiptapEditor({
             const url = window.prompt('이미지 주소 입력:')
             if (url) {
               const alt = window.prompt('이미지 설명 (alt text) 입력:', '')
-              ;(editor.commands as any).setImageWithCaption({ src: url, alt: alt || '' })
+                ; (editor.commands as any).setImageWithCaption({ src: url, alt: alt || '' })
             }
           }}
           className="px-2 py-1 rounded bg-gray-200 text-black"
@@ -215,14 +216,14 @@ function TiptapEditor({
         </button>
       </div>
       <EditorContent editor={editor} />
-      
+
       {/* 이미지 저장소 모달 */}
       <ImageStorageModal
         isOpen={isImageModalOpen}
         onClose={() => setIsImageModalOpen(false)}
         onImageSelect={(url) => {
           const alt = window.prompt('이미지 설명 (alt text) 입력:', '')
-          ;(editor.commands as any).setImageWithCaption({ src: url, alt: alt || '' })
+            ; (editor.commands as any).setImageWithCaption({ src: url, alt: alt || '' })
         }}
       />
     </div>
@@ -343,7 +344,7 @@ const EditorPage = () => {
               onClick={handleSave}
               disabled={isSaving}
               className="px-6 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-jj hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-50 disabled:cursor-not-allowed"
-            > 
+            >
               {isSaving ? '저장 중...' : '저장'}
             </button>
           </div>
@@ -390,9 +391,9 @@ const EditorPage = () => {
                 className="mt-1 block w-full px-4 py-3 bg-white text-black border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-sm"
               >
                 <option value="">선택하세요</option>
-                <option value="인터뷰">인터뷰</option>
-                <option value="글로벌">글로벌</option>
-                <option value="인사이트">인사이트</option>
+                <option value="interview">인터뷰</option>
+                <option value="global">글로벌</option>
+                <option value="insight">인사이트</option>
               </select>
             </div>
           </div>
@@ -418,40 +419,85 @@ const EditorPage = () => {
       </div>
 
       {/* Preview Panel */}
-      <div className="w-[430px] flex-shrink-0 h-full flex flex-col p-4">
-        <div className="bg-gray-100 rounded-lg shadow-md p-6 h-full overflow-y-auto">
-          <article
-          className="prose lg:prose-xl max-w-none
-          prose-h1:text-gray-900 prose-h1:font-bold
-          prose-h2:text-gray-900 prose-h2:font-bold prose-h2:p-3 prose-h2:rounded-lg prose-h2:border-l-4 prose-h2:border-t-4 prose-h2:border-jj prose-h2:tracking-tighter
-          prose-p:text-gray-700 prose-p:leading-relaxed
-          prose-a:text-blue-600 prose-a:no-underline hover:prose-a:underline
-          prose-strong:text-gray-900
-          prose-ul:text-gray-700 prose-ol:text-gray-700
-          prose-li:text-gray-700
-          prose-blockquote:text-gray-600 prose-blockquote:border-l-blue-500               
-          prose-img:rounded-lg prose-img:shadow-md prose-img:mx-auto
-          prose-figcaption:text-center prose-figcaption:text-gray-500 prose-figcaption:text-sm">
-            <h1 dangerouslySetInnerHTML={{ __html: article.title || '' }}></h1>
-            <p className="text-sm text-gray-500 mb-2 sm:mb-0">
-              {article.author && (
-                <span className="font-medium">Written by {article.author}</span>
+      <div className="w-[430px] h-[1000px] p-4 overflow-y-auto flex-shrink-0 h-full flex flex-col min-h-screen">
+        <div className="max-w-5xl mx-auto">
+          <article className="bg-white rounded-none sm:rounded-lg shadow-lg overflow-hidden">
+            {/* 헤더 이미지 */}
+            <div className="relative w-full h-48">
+              <Image
+                src={article.image as string}
+                alt={article.title as string}
+                fill
+                className="object-cover"
+                priority
+              />
+              <div className="absolute inset-0 bg-black bg-opacity-40"></div>
+            </div>
+
+            <div className="pt-8 pb-8 pl-4 pr-4">
+              {/* 제목 */}
+              <h1 className="text-3xl font-bold text-gray-900 mb-4 leading-tight tracking-tight">
+                {article.title}
+              </h1>
+
+              {/* 메타 정보 */}
+              <div className="flex flex-col mb-8 pb-6 border-b border-gray-300">
+                <div className="text-sm text-gray-900 mb-2">
+                  {article.author && (
+                    <span className="font-medium">에디터 {article.author}</span>
+                  )}
+                </div>
+                <div className="text-sm text-gray-900">
+                  <span className="font-medium">작성일: </span>
+                  {new Date(article.created_at as string).toLocaleDateString('ko-KR', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                  })}
+                </div>
+                <div className="text-sm text-gray-900">
+                  <span className="font-medium">수정일: </span>
+                  {new Date(article.updated_at as string).toLocaleDateString('ko-KR', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                  })}
+                </div>
+              </div>
+
+              {/* 요약 */}
+              {article.intro && (
+                <div className="mb-8 p-3 border-l-4 border-jj">
+                  <p className="text-gray-700 font-medium">
+                    {article.intro}
+                  </p>
+                </div>
               )}
-              <br />
-              {new Date(article.created_at as string).toLocaleDateString('ko-KR', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
-              })}
-            </p>
-            <div style={{ whiteSpace: 'pre-wrap' }}>
-              <div dangerouslySetInnerHTML={{ __html: article.intro || '' }}></div>
-              <div dangerouslySetInnerHTML={{ __html: article.content || '' }}></div>
+
+              {/* 본문 내용 */}
+              <div
+                className="prose prose-lg max-w-none prose-gray
+                  prose-h1:text-gray-900 prose-h1:font-bold
+                  prose-h2:text-gray-900 prose-h2:font-bold prose-h2:p-3 prose-h2:rounded-lg prose-h2:border-l-4 prose-h2:border-t-4 prose-h2:border-jj prose-h2:tracking-tighter
+                  prose-p:text-gray-700 prose-p:leading-relaxed
+                  prose-a:text-blue-600 prose-a:no-underline hover:prose-a:underline
+                  prose-strong:text-gray-900
+                  prose-ul:text-gray-700
+                  prose-ol:text-gray-700
+                  prose-li:text-gray-700
+                  prose-blockquote:text-gray-600 prose-blockquote:border-l-blue-500               
+                  prose-img:rounded-lg prose-img:shadow-md prose-img:mx-auto
+                  prose-figcaption:text-center prose-figcaption:text-gray-500 prose-figcaption:text-sm
+                  prose-hr:border-gray-300 prose-hr:my-4"
+                dangerouslySetInnerHTML={{
+                  __html: article.content?.replace(/\n/g, '<br />') || ''
+                }}
+              />
             </div>
           </article>
         </div>
       </div>
-    </main>
+    </main >
   )
 }
 
