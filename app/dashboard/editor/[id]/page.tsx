@@ -75,6 +75,7 @@ type Article = {
   created_at: string | null;
   content: string | null;
   type: string | null;
+  image: string | null;
   [key: string]: unknown;
 }
 
@@ -239,6 +240,7 @@ const EditorPage = () => {
   const [article, setArticle] = useState<Article | null>(null)
   const [isSaving, setIsSaving] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
+  const [isImageModalOpen, setIsImageModalOpen] = useState(false)
   const supabase = createClient()
 
   // 안전하게 id 추출
@@ -305,13 +307,22 @@ const EditorPage = () => {
     })
   }
 
+  const handleImageSelect = (imageUrl: string) => {
+    if (!article) return
+    setArticle({
+      ...article,
+      image: imageUrl,
+    })
+    setIsImageModalOpen(false)
+  }
+
   const handleSave = async () => {
     if (!article) return
     setIsSaving(true)
-    const { title, intro, content, author, type, updated_at } = article
+    const { title, intro, content, author, type, image, updated_at } = article
     const { error } = await supabase
       .from('articles')
-      .update({ title, intro, content, author, type, updated_at })
+      .update({ title, intro, content, author, type, image, updated_at })
       .eq('id', article.id)
 
     if (error) {
@@ -364,6 +375,61 @@ const EditorPage = () => {
               className="mt-1 block w-full px-4 py-3 bg-white text-black border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-sm"
               placeholder="작성자"
             />
+          </div>
+
+          {/* 대표 이미지 관리 섹션 */}
+          <div className="w-full mb-6">
+            <label className="block text-sm font-medium text-white mb-2">
+              대표 이미지
+            </label>
+            <div className="bg-white border border-gray-300 rounded-md p-4">
+              {article.image ? (
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-16 h-16 bg-gray-100 rounded-md overflow-hidden">
+                      <Image
+                        src={article.image}
+                        alt="대표 이미지"
+                        width={64}
+                        height={64}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-gray-900">
+                        현재 이미지
+                      </p>
+                      <p className="text-xs text-gray-500 truncate max-w-xs">
+                        {article.image}
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setIsImageModalOpen(true)}
+                    className="px-4 py-2 bg-gray-100 text-gray-700 text-sm font-medium rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+                  >
+                    변경
+                  </button>
+                </div>
+              ) : (
+                <div className="text-center py-6">
+                  <div className="w-16 h-16 bg-gray-100 rounded-md mx-auto mb-3 flex items-center justify-center">
+                    <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                  </div>
+                  <p className="text-sm text-gray-500 mb-3">대표 이미지가 설정되지 않았습니다</p>
+                  <button
+                    type="button"
+                    onClick={() => setIsImageModalOpen(true)}
+                    className="px-4 py-2 bg-jj text-white text-sm font-medium rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                  >
+                    이미지 선택
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
 
           <div className="flex gap-4 mb-6">
@@ -499,6 +565,13 @@ const EditorPage = () => {
           </article>
         </div>
       </div>
+
+      {/* 대표 이미지 선택 모달 */}
+      <ImageStorageModal
+        isOpen={isImageModalOpen}
+        onClose={() => setIsImageModalOpen(false)}
+        onImageSelect={handleImageSelect}
+      />
     </main >
   )
 }
