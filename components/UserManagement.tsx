@@ -141,7 +141,7 @@ export default function UserManagement({ initialUsers }: UserManagementProps) {
                       value={user.role || 'viewer'}
                       onChange={(e) => updateUserRole(user.id, e.target.value as UserRole)}
                       disabled={loading === user.id}
-                      className="text-sm border border-gray-300 rounded-md px-3 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
+                      className="text-black text-sm border border-gray-300 rounded-md px-3 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
                     >
                       <option value="viewer">viewer</option>
                       <option value="editor">editor</option>
