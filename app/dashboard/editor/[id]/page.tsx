@@ -537,7 +537,9 @@ const EditorPage = () => {
               {article.intro && (
                 <div className="mb-8 p-3 border-l-4 border-jj">
                   <p className="text-gray-700 font-medium">
-                    {article.intro}
+                    <div dangerouslySetInnerHTML={{
+                      __html: article.intro || ''
+                    }} />
                   </p>
                 </div>
               )}
