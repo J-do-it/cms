@@ -113,7 +113,7 @@ function TiptapEditor({
     editorProps: {
       attributes: {
         class:
-          'w-full min-h-[100px] max-h-[500px] bg-white text-black border border-gray-300 rounded-md px-4 py-3 focus:outline-none text-sm overflow-y-auto',
+          'prose-img:w-[50%] prose-img:mx-auto w-full min-h-[100px] max-h-[500px] bg-white text-black border border-gray-300 rounded-md px-4 py-3 focus:outline-none text-sm overflow-y-auto',
       },
     },
   })
@@ -144,6 +144,13 @@ function TiptapEditor({
           className={`px-2 py-1 rounded ${editor.isActive('heading', { level: 2 }) ? 'bg-jj text-white' : 'bg-gray-200 text-black'}`}
         >
           H2
+        </button>
+        <button
+          type="button"
+          onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
+          className={`px-2 py-1 rounded ${editor.isActive('heading', { level: 3 }) ? 'bg-jj text-white' : 'bg-gray-200 text-black'}`}
+        >
+          H3
         </button>
         <button
           type="button"
@@ -536,11 +543,11 @@ const EditorPage = () => {
               {/* 요약 */}
               {article.intro && (
                 <div className="mb-8 p-3 border-l-4 border-jj">
-                  <p className="text-gray-700 font-medium">
-                    <div dangerouslySetInnerHTML={{
+                    <div 
+                    className="text-gray-900 font-light text-sm leading-relaxed"
+                    dangerouslySetInnerHTML={{
                       __html: article.intro || ''
                     }} />
-                  </p>
                 </div>
               )}
 
@@ -549,6 +556,7 @@ const EditorPage = () => {
                 className="prose prose-lg max-w-none prose-gray
                   prose-h1:text-gray-900 prose-h1:font-bold
                   prose-h2:text-gray-900 prose-h2:font-bold prose-h2:p-3 prose-h2:rounded-lg prose-h2:border-l-4 prose-h2:border-t-4 prose-h2:border-jj prose-h2:tracking-tighter
+                  prose-h3:text-gray-700 prose-h3:font-bold prose-h3:tracking-tighter
                   prose-p:text-gray-700 prose-p:leading-relaxed
                   prose-a:text-blue-600 prose-a:no-underline hover:prose-a:underline
                   prose-strong:text-gray-900
