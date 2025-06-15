@@ -76,6 +76,7 @@ type Article = {
   content: string | null;
   type: string | null;
   image: string | null;
+  status: boolean | null;
   [key: string]: unknown;
 }
 
@@ -298,6 +299,14 @@ const EditorPage = () => {
     })
   }
 
+  const handleStatusChange = (e: ChangeEvent<HTMLSelectElement>) => {
+    if (!article) return
+    setArticle({
+      ...article,
+      status: e.target.value === 'true',
+    })
+  }
+
   const handleIntroChange = (value: string) => {
     if (!article) return
     setArticle({
@@ -326,10 +335,10 @@ const EditorPage = () => {
   const handleSave = async () => {
     if (!article) return
     setIsSaving(true)
-    const { title, intro, content, author, type, image, updated_at } = article
+    const { title, intro, content, author, type, image, status, updated_at } = article
     const { error } = await supabase
       .from('articles')
-      .update({ title, intro, content, author, type, image, updated_at })
+      .update({ title, intro, content, author, type, image, status, updated_at })
       .eq('id', article.id)
 
     if (error) {
@@ -469,6 +478,21 @@ const EditorPage = () => {
                 <option value="interview">인터뷰</option>
                 <option value="global">글로벌</option>
                 <option value="insight">인사이트</option>
+              </select>
+            </div>
+            <div className="w-40">
+              <label htmlFor="status" className="block text-sm font-medium text-white mb-2">
+                발행 상태
+              </label>
+              <select
+                id="status"
+                name="status"
+                value={article.status ? 'true' : 'false'}
+                onChange={handleStatusChange}
+                className="mt-1 block w-full px-4 py-3 bg-white text-black border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-sm"
+              >
+                <option value="false">보류중</option>
+                <option value="true">발행중</option>
               </select>
             </div>
           </div>

@@ -10,6 +10,7 @@ import { isAdmin } from '@/utils/auth'
 type Article = {
   id: string;
   title: string | null;
+  status: boolean | null;
 }
 
 const createNewArticle = async () => {
@@ -65,7 +66,7 @@ export default async function AdminPage() {
   const supabase = await createClient()
   const { data: articles, error } = await supabase
     .from('articles')
-    .select('id, title')
+    .select('id, title, status')
     .order('created_at', { ascending: false }) // 최신 글이 위로 오도록 정렬
 
   if (error) {
@@ -125,7 +126,19 @@ export default async function AdminPage() {
               articles.map((article: Article) => (
                 <li key={article.id} className="p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center">
                   <div className="mb-4 sm:mb-0">
-                    <p className="text-sm text-gray-500 dark:text-gray-400">ID: {article.id}</p>
+                    <div className="flex items-center gap-2 mb-2">
+                      <p className="text-sm text-gray-500 dark:text-gray-400">ID: {article.id}</p>
+                      <div className="flex items-center gap-1">
+                        <div className={`w-2 h-2 rounded-full ${
+                          article.status ? 'bg-green-500' : 'bg-gray-400'
+                        }`}></div>
+                        <span className={`text-xs font-medium ${
+                          article.status ? 'text-green-600' : 'text-gray-500'
+                        }`}>
+                          {article.status ? '발행중' : '보류중'}
+                        </span>
+                      </div>
+                    </div>
                     <p className="text-xl font-semibold text-gray-900 dark:text-white">{article.title || '제목 없음'}</p>
                   </div>
                   <div className="flex-shrink-0 flex gap-2">
